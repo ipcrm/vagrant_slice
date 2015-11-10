@@ -1,0 +1,15 @@
+---
+:backends:
+  - yaml
+
+:hierarchy:
+  - per_host/%{fqdn}
+  - per_app/%{custom_platform}
+  - per_app/%{custom_platform}/%{custom_domain}
+  - per_app/%{custom_platform}/%{custom_domain}/%{custom_env}
+  - ostype/%{kernel}
+  - common/common
+  
+:yaml:
+  :datadir: '/tmp/r10k/hieradata/hieradata_%{environment}'
+
