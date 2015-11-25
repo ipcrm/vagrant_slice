@@ -18,7 +18,6 @@ settings.each {|k,v|
         }
 }
 
-
 Vagrant.configure(2) do |config|
     config.vm.define settings['vm']['name'], primary: settings['vm']['primary'], autostart: settings['vm']['autoup'] do |config|
       # ###################
@@ -32,8 +31,8 @@ Vagrant.configure(2) do |config|
       # --
       config.vm.provider "vmware_fusion" do |vb|
         #vb.gui = true
-        vb.customize ["modifyvm", :id, "--cpus", settings['vm']['cpus'] ] if settings['vm']['cpus']
-        vb.customize ["modifyvm", :id, "--memory", settings['vm']['mem'] ] if settings['vm']['mem']
+        vb.vmx["numvcpus"] = settings['vm']['cpus'] if settings['vm']['cpus']
+        vb.vmx["memsize"] = settings['vm']['mem']  if settings['vm']['mem']
       end
 
       # ##################
@@ -51,7 +50,6 @@ Vagrant.configure(2) do |config|
       # ###################
       # Setup Puppet sync'd folders
       config.vm.synced_folder settings['host']['r10k_path'], "/tmp/r10k"
-      
     end
 end
 
