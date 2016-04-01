@@ -5,16 +5,22 @@ defaults:
   username:
   password:
   tenant_name:
-  floating_ip_pool:
-  networks:
-  security_groups:
   keypair_name:
   private_key_path:
-box:
-  name: 'dummy'
-vm:
-  name:
-  primary: true
-  autoup: true
+instance_defaults:
   flavor:
-  image:
+  floating_ip_pool:
+  networks:
+    - example_network
+  security_groups:
+    - example_security_group
+  box: 'dummy'
+instances:
+  example1:
+    primary: false
+    autoup: true
+    image: example_image
+  testinstance2:
+    primary: true
+    autoup: true
+    image: example_image_1
