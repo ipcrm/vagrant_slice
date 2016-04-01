@@ -41,6 +41,7 @@ Vagrant.configure(2) do |config|
           provider.sync_method            = settings['instances'][i]['sync_method']      ||= settings['instance_defaults']['sync_method']
         end
 
+       
         vmroles = settings['instances'][i]['roles'] ||= settings['instance_defaults']['roles']
         vmroles.each {|r|
           if roles.key?(r)
