@@ -20,6 +20,7 @@ Vagrant.configure(2) do |config|
         vmconfig.vm.box                     = settings['instances'][i]['box']
         vmconfig.vm.hostname                = settings['instances'][i]['name']
         vmconfig.ssh.username               = settings['instances'][i]['ssh_username'] ||= settings['defaults']['ssh_username']
+        vmconfig.ssh.pty = true
 
         vmconfig.vm.provider :openstack do |provider,overrides|
           provider.openstack_auth_url     = settings['defaults']['openstack_auth_url']
@@ -36,6 +37,12 @@ Vagrant.configure(2) do |config|
           provider.security_groups        = settings['instances'][i]['security_groups']  ||= settings['instance_defaults']['security_groups']
           provider.sync_method            = settings['instances'][i]['sync_method']      ||= settings['instance_defaults']['sync_method']
         end
+
+        roles = settings['instances'][i]['roles'] ||= settings['instance_defaults']['roles']
+        roles.each {|r|
+          vmconfig.vm.provision "shell",
+            inline: settings['roles'][r]
+        }
       end
     }
 end

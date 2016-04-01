@@ -16,14 +16,20 @@ instance_defaults:
     - default
   box: 'dummy'
   sync_method: none
+  roles:
+    - dummy
 instances:
   testinstance1:
     primary: false
     autoup: true
-    image: example
+    image: dummy
   testinstance2:
     primary: true
     autoup: true
-    image: example1
-    ssh_username: example
-    flavor: example
+    image: dummy
+    ssh_username: debian
+    flavor: dummy
+
+roles:
+  dummy:
+    echo ""
