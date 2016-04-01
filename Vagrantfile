@@ -34,6 +34,7 @@ Vagrant.configure(2) do |config|
           provider.floating_ip_pool       = settings['instances'][i]['floating_ip_pool'] ||= settings['instance_defaults']['floating_ip_pool']
           provider.networks               = settings['instances'][i]['networks']         ||= settings['instance_defaults']['networks']
           provider.security_groups        = settings['instances'][i]['security_groups']  ||= settings['instance_defaults']['security_groups']
+          provider.sync_method            = settings['instances'][i]['sync_method']      ||= settings['instance_defaults']['sync_method']
         end
       end
     }

@@ -13,14 +13,17 @@ instance_defaults:
   networks:
     - example_network
   security_groups:
-    - example_security_group
+    - default
   box: 'dummy'
+  sync_method: none
 instances:
-  example1:
+  testinstance1:
     primary: false
     autoup: true
-    image: example_image
+    image: example
   testinstance2:
     primary: true
     autoup: true
-    image: example_image_1
+    image: example1
+    ssh_username: example
+    flavor: example
