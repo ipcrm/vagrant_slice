@@ -1,0 +1,8 @@
+roles:
+  dummy:
+    echo ""
+  puppet_master: |
+    cd /var/tmp
+    curl -L -o puppet-enterpise-latest.tgz "https://pm.puppetlabs.com/cgi-bin/download.cgi?dist=el&rel=7&arch=x86_64&ver=latest"
+    tar -zxvf puppet-enterpise-latest.tgz
+    [ -f /vagrant/answers.txt ] && /var/tmp/puppet-enterprise-*/puppet-enterprise-installer -a /vagrant/answers.txt

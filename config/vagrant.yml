@@ -1,0 +1,34 @@
+---
+defaults:
+  ssh_username:
+  openstack_auth_url:
+  username:
+  password:
+  tenant_name:
+  keypair_name:
+  private_key_path:
+instance_defaults:
+  flavor:
+  floating_ip_pool:
+  networks:
+    - network
+  security_groups:
+    - default
+  box: 'dummy'
+  sync_method: none
+  roles:
+    - dummy
+instances:
+  testinstance1:
+    primary: false
+    autoup: true
+    image: example
+    roles:
+      - example
+    sync_method: rsync
+  testinstance2:
+    primary: true
+    autoup: true
+    image: debian
+    ssh_username: debian
+    flavor: example.small

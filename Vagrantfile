@@ -1,13 +1,11 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
-
-# Ensure that VirtualBox is used for these VMs
-# Without this setting, you need to include " --provider virtualbox" 
-# if you have vmware provider available as well.
 require 'yaml'
 
 # Load Config
-settings = YAML.load_file 'vagrant.yml'
+settings = YAML.load_file 'config/vagrant.yml'
+role_config = YAML.load_file 'config/roles.yml'
+roles = role_config['roles']
 
 # Validate Config
 settings.each {|k,v|
@@ -18,29 +16,40 @@ settings.each {|k,v|
         }
 }
 
+
 Vagrant.configure(2) do |config|
-    config.vm.define settings['vm']['name'], primary: settings['vm']['primary'], autostart: settings['vm']['autoup'] do |config|
-      config.vm.box                     = settings['box']['name']
-      config.vm.hostname                = settings['vm']['name']
-      config.ssh.username               = settings['defaults']['ssh_username']
+    settings['instances'].keys.each {|i|
+      config.vm.define i, primary: settings['instances'][i]['primary'], autostart: settings['instances'][i]['autoup'] do |vmconfig|
+        vmconfig.vm.box                     = settings['instances'][i]['box']
+        vmconfig.vm.hostname                = settings['instances'][i]['name']
+        vmconfig.ssh.username               = settings['instances'][i]['ssh_username'] ||= settings['defaults']['ssh_username']
+        vmconfig.ssh.pty = true
 
-      config.vm.provider :openstack do |provider,overrides|
-        provider.openstack_auth_url     = settings['defaults']['openstack_auth_url']
-        provider.username               = settings['defaults']['username']
-        provider.password               = settings['defaults']['password']
-        provider.tenant_name            = settings['defaults']['tenant_name']
+        vmconfig.vm.provider :openstack do |provider,overrides|
+          provider.openstack_auth_url     = settings['defaults']['openstack_auth_url']
+          provider.username               = settings['defaults']['username']
+          provider.password               = settings['defaults']['password']
+          provider.tenant_name            = settings['defaults']['tenant_name']
+          provider.keypair_name           = settings['defaults']['keypair_name']
+          overrides.ssh.private_key_path  = settings['defaults']['private_key_path']
 
-        provider.flavor                 = settings['vm']['flavor']
-        provider.image                  = settings['vm']['image']
-        provider.floating_ip_pool       = settings['defaults']['floating_ip_pool']
-        provider.networks               = settings['defaults']['networks']
-        provider.security_groups        = settings['defaults']['security_groups']
+          provider.image                  = settings['instances'][i]['image']
+          provider.flavor                 = settings['instances'][i]['flavor']           ||= settings['instance_defaults']['flavor']
+          provider.floating_ip_pool       = settings['instances'][i]['floating_ip_pool'] ||= settings['instance_defaults']['floating_ip_pool']
+          provider.networks               = settings['instances'][i]['networks']         ||= settings['instance_defaults']['networks']
+          provider.security_groups        = settings['instances'][i]['security_groups']  ||= settings['instance_defaults']['security_groups']
+          provider.sync_method            = settings['instances'][i]['sync_method']      ||= settings['instance_defaults']['sync_method']
+        end
 
-        provider.keypair_name           = settings['defaults']['keypair_name']
-        overrides.ssh.private_key_path  = settings['defaults']['private_key_path']
+        vmroles = settings['instances'][i]['roles'] ||= settings['instance_defaults']['roles']
+        vmroles.each {|r|
+          if roles.key?(r)
+            vmconfig.vm.provision "shell",
+              inline: roles[r]
+          else
+            abort("ERROR: VM #{i} - configured role #{r} doesn't exist! Cannot continue...exiting")
+          end
+        }
       end
-  end
+    }
 end
-
-
-
