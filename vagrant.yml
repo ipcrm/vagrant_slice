@@ -1,28 +1,20 @@
 ---
+defaults:
+  ssh_username:
+  openstack_auth_url:
+  username:
+  password:
+  tenant_name:
+  floating_ip_pool:
+  networks:
+  security_groups:
+  keypair_name:
+  private_key_path:
 box:
-  name: puppetlabs/centos-6.6-64-puppet-enterprise
+  name: 'dummy'
 vm:
-  name: vagrant.fusion.local
+  name:
   primary: true
   autoup: true
-  cpus: 1
-  mem: 512
-puppet:
-  options: '--verbose'
-  hiera_config: hiera.yaml
-host:
-  r10k_path: /Users/mcadorette/r10k_puppet_base/
-
-# If you need to set tcp forwarded ports; uncomment and add
-# 'vm port': 'host port'
-# Example:
-#
-tcp_ports:
-   '80': '10000'
-
-# If you need to set udp forwarded ports; uncomment and add
-# 'vm port': 'host port'
-# Example:
-#
-udp_ports:
-   '80': '10000'
+  flavor:
+  image:

@@ -20,37 +20,26 @@ settings.each {|k,v|
 
 Vagrant.configure(2) do |config|
     config.vm.define settings['vm']['name'], primary: settings['vm']['primary'], autostart: settings['vm']['autoup'] do |config|
-      # ###################
-      # Use downloaded box name
-      config.vm.box = settings['box']['name']
-      config.vm.hostname = settings['vm']['name']
+      config.vm.box                     = settings['box']['name']
+      config.vm.hostname                = settings['vm']['name']
+      config.ssh.username               = settings['defaults']['ssh_username']
 
+      config.vm.provider :openstack do |provider,overrides|
+        provider.openstack_auth_url     = settings['defaults']['openstack_auth_url']
+        provider.username               = settings['defaults']['username']
+        provider.password               = settings['defaults']['password']
+        provider.tenant_name            = settings['defaults']['tenant_name']
 
-      # ###################
-      # Use VBoxManage to customize the VM
-      # --
-      config.vm.provider "vmware_fusion" do |vb|
-        #vb.gui = true
-        vb.vmx["numvcpus"] = settings['vm']['cpus'] if settings['vm']['cpus']
-        vb.vmx["memsize"] = settings['vm']['mem']  if settings['vm']['mem']
+        provider.flavor                 = settings['vm']['flavor']
+        provider.image                  = settings['vm']['image']
+        provider.floating_ip_pool       = settings['defaults']['floating_ip_pool']
+        provider.networks               = settings['defaults']['networks']
+        provider.security_groups        = settings['defaults']['security_groups']
+
+        provider.keypair_name           = settings['defaults']['keypair_name']
+        overrides.ssh.private_key_path  = settings['defaults']['private_key_path']
       end
-
-      # ##################
-      # Setup forwarded TCP ports  
-      settings['tcp_ports'].each {|vport,hport|
-	config.vm.network "forwarded_port", guest: vport, host: hport, protocol: 'tcp'
-      } if settings['tcp_ports']
-
-      # ##################
-      # Setup forwarded UDP ports  
-      settings['udp_ports'].each {|vport,hport|
-	config.vm.network "forwarded_port", guest: vport, host: hport, protocol: 'udp'
-      } if settings['udp_ports']
-
-      # ###################
-      # Setup Puppet sync'd folders
-      config.vm.synced_folder settings['host']['r10k_path'], "/tmp/r10k"
-    end
+  end
 end
 
 
