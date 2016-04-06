@@ -1,8 +1,34 @@
 roles:
   dummy:
     echo ""
+  linux_hosts: |
+    PHOST=$(curl http://169.254.169.254/latest/meta-data/public-hostname)
+    PIPV4=$(ifconfig -a|grep -w inet|awk '{print $2}'|grep 192)
+
+    HSET=0
+    grep -i $PHOST /etc/hosts || HSET=1
+    grep -i $PIPV4 /etc/hosts || HSET=1
+
+    if [ $HSET -ne 0 ]; then
+      echo "Hosts file not set! Updating"
+      echo "${PIPV4} ${PHOST}" >> /etc/hosts
+    fi
+  disable_selinux: |
+    grep 'SELINUX\=disabled' /etc/selinux/config
+    if [ $? -ne 0 ]; then
+      echo '
+      SELINUX=disabled
+      SELINUXTYPE=targeted
+      ' >> /etc/selinux/config
+      setenforce Permissive
+      echo 'SELinux is now PERMISSIVE, but you need to reboot to fully disable'
+    fi
   puppet_master: |
     cd /var/tmp
     curl -L -o puppet-enterpise-latest.tgz "https://pm.puppetlabs.com/cgi-bin/download.cgi?dist=el&rel=7&arch=x86_64&ver=latest"
     tar -zxvf puppet-enterpise-latest.tgz
-    [ -f /vagrant/answers.txt ] && /var/tmp/puppet-enterprise-*/puppet-enterprise-installer -a /vagrant/answers.txt
+    if [ -f /vagrant/answers.txt ]; then
+      /var/tmp/puppet-enterprise-*/puppet-enterprise-installer -a /vagrant/answers.txt
+    else
+      echo "Role Puppet Master: Error - Answer file not present"
+    fi
