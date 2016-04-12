@@ -3,6 +3,7 @@ roles:
     echo ""
   linux_hosts: |
     PHOST=$(curl http://169.254.169.254/latest/meta-data/public-hostname)
+    SHOST=$(curl -s http://169.254.169.254/latest/meta-data/public-hostname|awk -F '.' '{print $1}')
     PIPV4=$(ifconfig -a|grep -w inet|awk '{print $2}'|grep 192)
 
     HSET=0
@@ -11,8 +12,9 @@ roles:
 
     if [ $HSET -ne 0 ]; then
       echo "Hosts file not set! Updating"
-      echo "${PIPV4} ${PHOST}" >> /etc/hosts
+      echo "${PIPV4} ${PHOST} ${SHOST}" >> /etc/hosts
     fi
+    exit 0
   disable_selinux: |
     grep 'SELINUX\=disabled' /etc/selinux/config
     if [ $? -ne 0 ]; then
@@ -23,6 +25,7 @@ roles:
       setenforce Permissive
       echo 'SELinux is now PERMISSIVE, but you need to reboot to fully disable'
     fi
+    exit 0
   puppet_master: |
     cd /var/tmp
     curl -L -o puppet-enterpise-latest.tgz "https://pm.puppetlabs.com/cgi-bin/download.cgi?dist=el&rel=7&arch=x86_64&ver=latest"
@@ -32,3 +35,4 @@ roles:
     else
       echo "Role Puppet Master: Error - Answer file not present"
     fi
+    exit 0
