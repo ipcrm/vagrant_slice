@@ -16,12 +16,12 @@ settings.each {|k,v|
         }
 }
 
-
 Vagrant.configure(2) do |config|
     settings['instances'].keys.each {|i|
       config.vm.define i, primary: settings['instances'][i]['primary'], autostart: settings['instances'][i]['autoup'] do |vmconfig|
         vmconfig.vm.box                     = settings['instances'][i]['box']
         vmconfig.vm.hostname                = settings['instances'][i]['name']
+        vmconfig.vm.communicator            = settings['instances'][i]['communicator'] ||= settings['defaults']['communicator']
         vmconfig.ssh.username               = settings['instances'][i]['ssh_username'] ||= settings['defaults']['ssh_username']
         vmconfig.ssh.pty = true
 
@@ -41,14 +41,13 @@ Vagrant.configure(2) do |config|
           provider.sync_method            = settings['instances'][i]['sync_method']      ||= settings['instance_defaults']['sync_method']
         end
 
-       
         vmroles = settings['instances'][i]['roles'] ||= settings['instance_defaults']['roles']
         vmroles.each {|r|
           if roles.key?(r)
             vmconfig.vm.provision "shell",
               inline: roles[r]
           else
-            abort("ERROR: VM #{i} - configured role #{r} doesn't exist! Cannot continue...exiting")
+            abort("Error: VM #{i} configured role #{r} is not valid! Existing...")
           end
         }
       end
