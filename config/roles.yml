@@ -19,7 +19,7 @@ roles:
       echo '
       SELINUX=disabled
       SELINUXTYPE=targeted
-      ' >> /etc/selinux/config
+      ' > /etc/selinux/config
       setenforce Permissive
       echo 'SELinux is now PERMISSIVE, but you need to reboot to fully disable'
     fi
