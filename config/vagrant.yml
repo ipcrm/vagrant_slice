@@ -1,16 +1,20 @@
 ---
 defaults:
-  ssh_username:
+  ssh_username: 
   openstack_auth_url:
-  username:
-  password:
-  tenant_name:
-  keypair_name:
-  private_key_path:
-  communicator:
+  username: 
+  password: 
+  tenant_name: 
+  keypair_name: 
+  private_key_path: 
+  communicator: 
+  ssh_disabled: 
+  winrm_username: 
+  winrm_password: 
+  master_ip: 
 instance_defaults:
-  flavor:
-  floating_ip_pool:
+  flavor: 
+  floating_ip_pool: 
   networks:
     - network
   security_groups:
@@ -20,16 +24,13 @@ instance_defaults:
   roles:
     - dummy
 instances:
-  testinstance1:
+  example.example.demo:
     primary: false
     autoup: true
-    image: example
+    image: centos_7_x86_64
     roles:
-      - example
+      - linux_hosts
+      - disable_selinux
+      - puppet_master
     sync_method: rsync
-  testinstance2:
-    primary: true
-    autoup: true
-    image: debian
-    ssh_username: debian
-    flavor: example.small
+    flavor: big

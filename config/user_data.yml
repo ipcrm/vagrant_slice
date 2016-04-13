@@ -1,0 +1,26 @@
+userdata:
+  windows: |
+    <powershell>
+    net user Administrator "Passowrd1"
+    wmic useraccount where "name='Administrator'" set PasswordExpires=FALSE
+
+    # Enable RDP
+    set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server'-name "fDenyTSConnections" -Value 0
+    netsh advfirewall firewall add rule name="RDP 3389" dir=in localport=3389 protocol=TCP action=allow
+
+    # Enable WinRM
+    winrm quickconfig -q
+    winrm set winrm/config/winrs '@{MaxMemoryPerShellMB="0"}'
+    winrm set winrm/config '@{MaxTimeoutms="7200000"}'
+    winrm set winrm/config/service '@{AllowUnencrypted="true"}'
+    winrm set winrm/config/service/auth '@{Basic="true"}'
+
+    netsh advfirewall firewall add rule name="WinRM 5985" protocol=TCP dir=in localport=5985 action=allow
+
+    net stop winrm
+    sc.exe config winrm start=auto
+    net start winrm
+
+    # turn off PowerShell execution policy restrictions
+    Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope LocalMachine
+    </powershell>
