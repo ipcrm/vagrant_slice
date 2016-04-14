@@ -22,12 +22,12 @@ roles:
   disable_selinux: |
     grep 'SELINUX\=disabled' /etc/selinux/config
     if [ $? -ne 0 ]; then
-      echo '
-      SELINUX=disabled
-      SELINUXTYPE=targeted
-      ' > /etc/selinux/config
-      setenforce Permissive
-      echo 'SELinux is now PERMISSIVE, but you need to reboot to fully disable'
+    echo '
+    SELINUX=disabled
+    SELINUXTYPE=targeted
+    ' > /etc/selinux/config
+    setenforce Permissive
+    echo 'SELinux is now PERMISSIVE, but you need to reboot to fully disable'
     fi
     exit 0
   puppet_master: |
