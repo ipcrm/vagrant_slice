@@ -20,6 +20,7 @@ settings.each {|k,v|
         }
 }
 
+machine_count=settings['instances'].keys.length
 Vagrant.configure(2) do |config|
     settings['instances'].keys.each {|i|
       config.vm.define i, primary: settings['instances'][i]['primary'], autostart: settings['instances'][i]['autoup'] do |vmconfig|
@@ -61,6 +62,16 @@ Vagrant.configure(2) do |config|
             abort("Error: VM #{i} configured role #{r} is not valid! Existing...")
           end
         }
+
+      if Vagrant.has_plugin?("vagrant-triggers")
+        vmconfig.trigger.after :destroy do
+          run "vagrant ssh /master/ -c 'sudo -i puppet node deactivate " + i + "'"
+          run "vagrant ssh /master/ -c 'sudo -i puppet cert clean " + i + "'"
+        end
+      end
+
       end
     }
+
+
 end
