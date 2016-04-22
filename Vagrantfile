@@ -3,11 +3,14 @@
 require 'yaml'
 
 # Load Config
-settings = YAML.load_file 'config/vagrant.yml'
-role_config = YAML.load_file 'config/roles.yml'
-roles = role_config['roles']
-userdata_raw = YAML.load_file 'config/user_data.yml'
-user_data = userdata_raw['userdata']
+settings              = YAML.load_file 'config/vagrant.yml'
+instance_raw          = YAML.load_file 'config/instances.yml'
+instances             = instance_raw['instances']
+settings['instances'] = instances
+role_config           = YAML.load_file 'config/roles.yml'
+roles                 = role_config['roles']
+userdata_raw          = YAML.load_file 'config/user_data.yml'
+user_data             = userdata_raw['userdata']
 
 
 

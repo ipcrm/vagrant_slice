@@ -1,0 +1,12 @@
+---
+instances:
+  master.example.com:
+    primary: false
+    autoup: true
+    image: centos_7
+    roles:
+      - linux_hosts
+      - disable_selinux
+      - puppet_master
+    sync_method: rsync
+    flavor: example.flavor

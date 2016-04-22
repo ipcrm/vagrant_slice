@@ -23,14 +23,3 @@ instance_defaults:
   sync_method: none
   roles:
     - dummy
-instances:
-  example.example.demo:
-    primary: false
-    autoup: true
-    image: centos_7_x86_64
-    roles:
-      - linux_hosts
-      - disable_selinux
-      - puppet_master
-    sync_method: rsync
-    flavor: big
