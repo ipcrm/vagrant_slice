@@ -1,15 +1,16 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 require 'yaml'
+cwd =  File.dirname(__FILE__)
 
 # Load Config
-settings              = YAML.load_file 'config/vagrant.yml'
-instance_raw          = YAML.load_file 'config/instances.yml'
+settings              = YAML.load_file cwd + '/config/vagrant.yml'
+instance_raw          = YAML.load_file cwd + '/config/instances.yml'
+userdata_raw          = YAML.load_file cwd + '/config/user_data.yml'
+role_config           = YAML.load_file cwd + '/config/roles.yml'
 instances             = instance_raw['instances']
 settings['instances'] = instances
-role_config           = YAML.load_file 'config/roles.yml'
 roles                 = role_config['roles']
-userdata_raw          = YAML.load_file 'config/user_data.yml'
 user_data             = userdata_raw['userdata']
 
 
