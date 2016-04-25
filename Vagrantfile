@@ -2,6 +2,7 @@
 # vi: set ft=ruby :
 require 'yaml'
 cwd =  File.dirname(__FILE__)
+ENV['VAGRANT_DEFAULT_PROVIDER'] = 'openstack'
 
 # Load Config
 settings              = YAML.load_file cwd + '/config/vagrant.yml'
@@ -69,8 +70,7 @@ Vagrant.configure(2) do |config|
 
       if Vagrant.has_plugin?("vagrant-triggers")
         vmconfig.trigger.after :destroy do
-          run "vagrant ssh /master/ -c 'sudo -i puppet node deactivate " + i + "'"
-          run "vagrant ssh /master/ -c 'sudo -i puppet cert clean " + i + "'"
+          run "vagrant ssh /master/ -c 'sudo -i puppet node purge " + i + "'"
         end
       end
 
