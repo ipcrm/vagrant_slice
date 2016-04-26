@@ -1,0 +1,25 @@
+---
+defaults:
+  ssh_username: centos
+  openstack_auth_url:
+  username:
+  password:
+  tenant_name:
+  keypair_name:
+  private_key_path: '~/.ssh/id_rsa'
+  communicator: ssh
+  ssh_disabled: false
+  winrm_username: Administrator
+  winrm_password: 'Password1'
+  master_ip:
+  primary: false
+  autoup: true
+instance_defaults:
+  flavor: d1.small
+  floating_ip_pool: float-pool
+  networks:
+    - network
+  security_groups:
+    - default
+  box: 'dummy'
+  sync_method: none

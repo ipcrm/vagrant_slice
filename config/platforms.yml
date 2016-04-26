@@ -1,0 +1,30 @@
+---
+platforms:
+  centos7:
+    image: centos_7_x86_64
+    sync_method: rsync
+    user_data: centos
+
+  centos7_master:
+    image: centos_7_x86_64
+    roles:
+      - puppet_master
+    sync_method: rsync
+    user_data: centos_master
+
+  centos6:
+    image: centos_6_x86_64
+    sync_method: rsync
+    user_data: centos
+
+  debian8:
+    image: debian_8.2.0_x86_64
+    ssh_username: debian
+    user_data: debian
+    sync_method: rsync
+
+  server2012:
+    image: windows_2012_r2_std_eval_x86_64
+    communicator: winrm
+    ssh_disabled: true
+    user_data: windows

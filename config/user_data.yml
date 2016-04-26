@@ -1,7 +1,7 @@
 userdata:
   windows: |
     <powershell>
-    net user Administrator "Passowrd1"
+    net user Administrator "Password1"
     wmic useraccount where "name='Administrator'" set PasswordExpires=FALSE
 
     # Enable RDP
@@ -23,4 +23,113 @@ userdata:
 
     # turn off PowerShell execution policy restrictions
     Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope LocalMachine
+
+    Set-DNSClientServerAddress -interfaceIndex 12 -ServerAddresses ('MASTERSERVER')
+    Set-DNSClient -interfaceIndex 12 -ConnectionSpecificSuffix "pdx.puppetlabs.demo"
+    $hostname = $env:computername.ToLower()
+    ac -Encoding UTF8 C:\Windows\system32\drivers\etc\hosts "127.0.0.1 ${hostname}.pdx.puppetlabs.demo ${hostname}"
+
+    mkdir C:/tmp
+    # This script installs the windows puppet agent on the windows seteam vagrant vms
+    # from the master's pe_repo by downloading it to C:\tmp first and then running
+    # msiexec on it from there.
+
+    $puppet_master_server = "master.example.demo"
+    $msi_source = "https://${puppet_master_server}:8140/packages/current/windows-x86_64/puppet-agent-x64.msi"
+    $msi_dest = "C:\tmp\puppet-agent-x64.msi"
+
+    # Start the agent installation process and wait for it to end before continuing.
+    Write-Host "Installing puppet agent from $msi_source"
+
+    Function Get-WebPage { Param( $url, $file, [switch]$force)
+      if($force) {
+        [Net.ServicePointManager]::ServerCertificateValidationCallback = {$true}
+      }
+      $webclient = New-Object system.net.webclient
+      $webclient.DownloadFile($url,$file)
+    }
+
+    $certname = "${hostname}.example.demo"
+    Get-WebPage -url $msi_source -file $msi_dest -force
+    $msiexec_path = "C:\Windows\System32\msiexec.exe"
+    $msiexec_args = "/qn /log c:\log.txt /i $msi_dest PUPPET_MASTER_SERVER=$puppet_master_server PUPPET_AGENT_CERTNAME=$certname"
+    $msiexec_proc = [System.Diagnostics.Process]::Start($msiexec_path, $msiexec_args)
+    $msiexec_proc.WaitForExit()
     </powershell>
+
+  centos: |
+    #!/bin/bash
+    sed -i 's/Defaults    requiretty//g' /etc/sudoers
+    grep 'SELINUX\=disabled' /etc/selinux/config
+    if [ $? -ne 0 ]; then
+    echo '
+    SELINUX=disabled
+    SELINUXTYPE=targeted
+    ' > /etc/selinux/config
+    setenforce Permissive
+    echo 'SELinux is now PERMISSIVE, but you need to reboot to fully disable'
+    fi
+
+    PHOST=$(curl http://169.254.169.254/latest/meta-data/public-hostname)
+    SHOST=$(curl -s http://169.254.169.254/latest/meta-data/public-hostname|awk -F '.' '{print $1}')
+    PIPV4=$(ifconfig -a|grep -w inet|awk '{print $2}'|grep 192)
+    echo "${PIPV4} ${PHOST} ${SHOST}" >> /etc/hosts
+    yum clean all
+    yum install -y curl
+    echo 'nameserver MASTERSERVER' > /etc/resolv.conf
+    curl -k https://master.inf.puppetlabs.demo:8140/packages/current/install.bash | sudo bash
+
+  centos_master: |
+    #!/bin/bash
+    sed -i 's/Defaults    requiretty//g' /etc/sudoers
+    grep 'SELINUX\=disabled' /etc/selinux/config
+    if [ $? -ne 0 ]; then
+    echo '
+    SELINUX=disabled
+    SELINUXTYPE=targeted
+    ' > /etc/selinux/config
+    setenforce Permissive
+    echo 'SELinux is now PERMISSIVE, but you need to reboot to fully disable'
+    fi
+
+    PHOST=$(curl http://169.254.169.254/latest/meta-data/public-hostname)
+    SHOST=$(curl -s http://169.254.169.254/latest/meta-data/public-hostname|awk -F '.' '{print $1}')
+    PIPV4=$(ifconfig -a|grep -w inet|awk '{print $2}'|grep 192)
+    echo "${PIPV4} ${PHOST} ${SHOST}" >> /etc/hosts
+    yum clean all
+    yum install -y curl
+
+  centos_no_cm: |
+    #!/bin/bash
+    sed -i 's/Defaults    requiretty//g' /etc/sudoers
+    grep 'SELINUX\=disabled' /etc/selinux/config
+    if [ $? -ne 0 ]; then
+    echo '
+    SELINUX=disabled
+    SELINUXTYPE=targeted
+    ' > /etc/selinux/config
+    setenforce Permissive
+    echo 'SELinux is now PERMISSIVE, but you need to reboot to fully disable'
+    fi
+    PHOST=$(curl http://169.254.169.254/latest/meta-data/public-hostname)
+    SHOST=$(curl -s http://169.254.169.254/latest/meta-data/public-hostname|awk -F '.' '{print $1}')
+    PIPV4=$(ifconfig -a|grep -w inet|awk '{print $2}'|grep 192)
+    echo "${PIPV4} ${PHOST} ${SHOST}" >> /etc/hosts
+    yum clean all
+    yum install -y curl
+    echo 'nameserver MASTERSERVER' > /etc/resolv.conf
+
+  debian: |
+    #!/bin/bash
+    sed -i 's/Defaults    requiretty//g' /etc/sudoers
+    apt-get update
+    apt-get install -y curl
+
+    PHOST=$(curl http://169.254.169.254/latest/meta-data/public-hostname)
+    SHOST=$(curl -s http://169.254.169.254/latest/meta-data/public-hostname|awk -F '.' '{print $1}')
+    PIPV4=$(ifconfig -a|grep -w inet|awk '{print $2}'|grep 192|sed 's/addr\://g')
+    echo "${PIPV4} ${PHOST} ${SHOST}" >> /etc/hosts
+    echo 'nameserver MASTERSERVER' > /etc/resolv.conf
+
+    curl -k https://master.inf.puppetlabs.demo:8140/packages/current/install.bash | sudo bash
+

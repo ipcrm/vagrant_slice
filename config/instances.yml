@@ -1,12 +1,29 @@
 ---
 instances:
-  master.example.com:
-    primary: false
-    autoup: true
-    image: centos_7
-    roles:
-      - linux_hosts
-      - disable_selinux
-      - puppet_master
-    sync_method: rsync
-    flavor: example.flavor
+  master.example.demo:
+    platform: centos7_master
+    flavor: m1.large
+
+  centos7a.example.demo:
+    platform: centos7
+
+  debian1.example.demo:
+    platform: debian8
+
+  gitlab.example.demo:
+    platform: centos7
+    flavor: d1.medium
+
+  git-runner.example.demo:
+    platform: centos7
+
+  server2012r2a.example.demo:
+    platform: server2012
+    flavor: d1.medium
+
+  server2012r2b.example.demo:
+    platform: server2012
+    flavor: d1.medium
+
+  jenkins.example.demo:
+    platform: centos6
