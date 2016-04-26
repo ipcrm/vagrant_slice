@@ -25,9 +25,9 @@ userdata:
     Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope LocalMachine
 
     Set-DNSClientServerAddress -interfaceIndex 12 -ServerAddresses ('MASTERSERVER')
-    Set-DNSClient -interfaceIndex 12 -ConnectionSpecificSuffix "pdx.puppetlabs.demo"
+    Set-DNSClient -interfaceIndex 12 -ConnectionSpecificSuffix "example.demo"
     $hostname = $env:computername.ToLower()
-    ac -Encoding UTF8 C:\Windows\system32\drivers\etc\hosts "127.0.0.1 ${hostname}.pdx.puppetlabs.demo ${hostname}"
+    ac -Encoding UTF8 C:\Windows\system32\drivers\etc\hosts "127.0.0.1 ${hostname}.example.demo ${hostname}"
 
     mkdir C:/tmp
     # This script installs the windows puppet agent on the windows seteam vagrant vms
@@ -72,7 +72,7 @@ userdata:
 
     PHOST=$(curl http://169.254.169.254/latest/meta-data/public-hostname)
     SHOST=$(curl -s http://169.254.169.254/latest/meta-data/public-hostname|awk -F '.' '{print $1}')
-    PIPV4=$(ifconfig -a|grep -w inet|awk '{print $2}'|grep 192)
+    PIPV4=$(ifconfig -a|grep -w inet|awk '{print $2}'|grep 192|sed 's/addr\://g')
     echo "${PIPV4} ${PHOST} ${SHOST}" >> /etc/hosts
     yum clean all
     yum install -y curl
@@ -94,7 +94,7 @@ userdata:
 
     PHOST=$(curl http://169.254.169.254/latest/meta-data/public-hostname)
     SHOST=$(curl -s http://169.254.169.254/latest/meta-data/public-hostname|awk -F '.' '{print $1}')
-    PIPV4=$(ifconfig -a|grep -w inet|awk '{print $2}'|grep 192)
+    PIPV4=$(ifconfig -a|grep -w inet|awk '{print $2}'|grep 192|sed 's/addr\://g')
     echo "${PIPV4} ${PHOST} ${SHOST}" >> /etc/hosts
     yum clean all
     yum install -y curl
@@ -113,7 +113,7 @@ userdata:
     fi
     PHOST=$(curl http://169.254.169.254/latest/meta-data/public-hostname)
     SHOST=$(curl -s http://169.254.169.254/latest/meta-data/public-hostname|awk -F '.' '{print $1}')
-    PIPV4=$(ifconfig -a|grep -w inet|awk '{print $2}'|grep 192)
+    PIPV4=$(ifconfig -a|grep -w inet|awk '{print $2}'|grep 192|sed 's/addr\://g')
     echo "${PIPV4} ${PHOST} ${SHOST}" >> /etc/hosts
     yum clean all
     yum install -y curl
