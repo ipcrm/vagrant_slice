@@ -21,7 +21,6 @@ platforms:
     image: debian_8.2.0_x86_64
     ssh_username: debian
     user_data: debian
-    sync_method: rsync
 
   server2012:
     image: windows_2012_r2_std_eval_x86_64
