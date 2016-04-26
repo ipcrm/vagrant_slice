@@ -77,7 +77,7 @@ Vagrant.configure(2) do |config|
           provider.security_groups        = get_settings(platforms,settings,i,'security_groups')
           provider.sync_method            = get_settings(platforms,settings,i,'sync_method')
           provider.ssh_disabled           = get_settings(platforms,settings,i,'ssh_disabled')
-          provider.user_data              = get_settings(platforms,settings,i,'user_data').gsub("MASTERSERVER",master_ip)
+          provider.user_data              = user_data[ get_settings(platforms,settings,i,'user_data').gsub("MASTERSERVER",master_ip) ]
         end
 
         vmroles = get_settings(platforms,settings,i,'roles')
