@@ -67,11 +67,14 @@ platforms:
     image: centos_7_x86_64
     sync_method: rsync
     user_data: centos
-
+    roles:
+      - posix_agent
   debian8:
     image: debian_8.2.0_x86_64
     ssh_username: debian
     user_data: debian
+    roles:
+      - posix_agent
 
   server2012:
     image: windows_2012_r2_std_eval_x86_64
@@ -79,6 +82,8 @@ platforms:
     ssh_disabled: true
     user_data: windows
     guest_type: windows
+    roles:
+      - windows_agent
 ```
 
 Per platform you can override any of the options declared in [Defaults](#defaults-configuration).

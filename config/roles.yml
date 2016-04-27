@@ -10,3 +10,36 @@ roles:
       echo "Role Puppet Master: Error - Answer file not present"
     fi
     exit 0
+
+  windows_agent: |
+    # This script installs the windows puppet agent on the windows seteam vagrant vms
+    # from the master's pe_repo by downloading it to C:\tmp first and then running
+    # msiexec on it from there.
+    mkdir C:/tmp
+
+    $puppet_master_server = "master.example.demo"
+    $msi_source = "https://${puppet_master_server}:8140/packages/current/windows-x86_64/puppet-agent-x64.msi"
+    $msi_dest = "C:\tmp\puppet-agent-x64.msi"
+
+    # Start the agent installation process and wait for it to end before continuing.
+    Write-Host "Installing puppet agent from $msi_source"
+
+    Function Get-WebPage { Param( $url, $file, [switch]$force)
+      if($force) {
+        [Net.ServicePointManager]::ServerCertificateValidationCallback = {$true}
+      }
+      $webclient = New-Object system.net.webclient
+      $webclient.DownloadFile($url,$file)
+    }
+
+    $hostname = $env:computername.ToLower()
+    $certname = "${hostname}.example.demo"
+    Get-WebPage -url $msi_source -file $msi_dest -force
+    $msiexec_path = "C:\Windows\System32\msiexec.exe"
+    $msiexec_args = "/qn /log c:\log.txt /i $msi_dest PUPPET_MASTER_SERVER=$puppet_master_server PUPPET_AGENT_CERTNAME=$certname"
+    $msiexec_proc = [System.Diagnostics.Process]::Start($msiexec_path, $msiexec_args)
+    $msiexec_proc.WaitForExit()
+
+  posix_agent: |
+    curl -k https://master.example.demo:8140/packages/current/install.bash | sudo bash
+

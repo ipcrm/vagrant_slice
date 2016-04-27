@@ -11,7 +11,6 @@ defaults:
   ssh_disabled: false
   winrm_username: Administrator
   winrm_password: 'Password1'
-  master_ip:
   primary: false
   autoup: true
 instance_defaults:
