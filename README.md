@@ -8,6 +8,7 @@
     * [Platform Configuration](#platform-configuration)
     * [User Data Configuration](#user-data-configuration)
     * [Role Configuration](#role-configuration)
+3. [Other Stuff](#other-stuff)
 
 ## Overview
 
@@ -150,4 +151,25 @@ roles:
     [..truncated..]
 ```
 
+### Other Stuff
+The Gemfile in this repo is present just to allow for some hacking if desired.  As of writing there was a custom vagrant-openstack-provider present that allowed for the subcommands 'host-list' and 'puppet-host-list' just like vagrant-hosts gives in a local env.
 
+Example:
+
+```
+> vagrant openstack host-list
+
++----------------------------+-----------------+
+| Instance                   | Floating IP     |
++----------------------------+-----------------+
+| master.example.demo        | 192.168.166.108 |
+| git-runner.example.demo    | 192.168.162.4   |
+| gitlab.example.demo        | 192.168.168.186 |
+| centos7a.example.demo      | 192.168.171.76  |
+| server2012r2a.example.demo | 192.168.168.208 |
+| server2012r2b.example.demo | 192.168.173.37  |
+| ubuntu1404.example.demo    | 192.168.167.0   |
+| centos6a.example.demo      | 192.168.173.91  |
+| debian1.example.demo       | 192.168.167.192 |
++-----------------------------------+----------+
+```
