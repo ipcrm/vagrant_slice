@@ -29,7 +29,7 @@ def get_settings(platforms,settings,instance,setting)
   else
     # If this is not the 'roles' setting, fail.  
     #  Roles can be empty
-    if setting != 'roles'
+    if setting != 'roles' && setting != 'guest_type'
       missing_setting(setting,instance)
     end
   end
@@ -51,7 +51,6 @@ platforms             = platform_raw['platforms']
 
 Vagrant.configure(2) do |config|
     settings['instances'].keys.each {|i|
-
       config.vm.define i, primary: get_settings(platforms,settings,i,'primary'), autostart: get_settings(platforms,settings,i,'autoup') do |vmconfig|
         vmconfig.vm.hostname              = settings['instances'][i]['name']
         vmconfig.vm.box                   = get_settings(platforms,settings,i,'box')
@@ -61,6 +60,10 @@ Vagrant.configure(2) do |config|
         vmconfig.ssh.username             = get_settings(platforms,settings,i,'ssh_username')
         vmconfig.ssh.pty                  = true
         master_ip                         = get_settings(platforms,settings,i,'master_ip')
+
+        if get_settings(platforms,settings,i,'guest_type') != nil
+          vmconfig.vm.guest = get_settings(platforms,settings,i,'guest_type')
+        end
 
         vmconfig.vm.provider :openstack do |provider,overrides|
           provider.openstack_auth_url     = get_settings(platforms,settings,i,'openstack_auth_url')
@@ -78,6 +81,17 @@ Vagrant.configure(2) do |config|
           provider.sync_method            = get_settings(platforms,settings,i,'sync_method')
           provider.ssh_disabled           = get_settings(platforms,settings,i,'ssh_disabled')
           provider.user_data              = user_data[ get_settings(platforms,settings,i,'user_data') ].gsub("MASTERSERVER",master_ip)
+        end
+
+        vmconfig.vm.provision :hosts do |provisioner|
+          provisioner.sync_hosts = true
+          provisioner.autoconfigure = true
+          provisioner.exports = {
+            'global' => [
+              ['@facter_ipaddress', ['@vagrant_hostnames']],
+            ],
+          }
+          provisioner.imports = ['global']
         end
 
         vmroles = get_settings(platforms,settings,i,'roles')

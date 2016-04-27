@@ -27,3 +27,10 @@ platforms:
     communicator: winrm
     ssh_disabled: true
     user_data: windows
+    guest_type: windows
+
+  ubuntu1404:
+    image: ubuntu_14.04_x86_64
+    ssh_username: ubuntu
+    user_data: ubuntu
+    flavor: g1.small
