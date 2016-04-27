@@ -10,9 +10,8 @@ gem 'vagrant', :github => 'mitchellh/vagrant', :tag => 'v1.8.1'
 # simulates the action of `vagrant plugin`, which is inactive when running
 # under Bundler.
 group :plugins do
-  gem 'oscar', '>= 0.5'
   gem 'vagrant-hosts', '>= 2.8.0'
-  gem 'vagrant-vsphere', '>= 1.7.0'
   gem 'vagrant-openstack-provider', :github => 'ipcrm/vagrant-openstack-provider', :ref => 'master'
   gem 'vagrant-norequiretty'
+  gem 'vagrant-triggers'
 end
