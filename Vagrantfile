@@ -59,7 +59,6 @@ Vagrant.configure(2) do |config|
         vmconfig.winrm.password           = get_settings(platforms,settings,i,'winrm_password')
         vmconfig.ssh.username             = get_settings(platforms,settings,i,'ssh_username')
         vmconfig.ssh.pty                  = true
-        master_ip                         = get_settings(platforms,settings,i,'master_ip')
 
         if get_settings(platforms,settings,i,'guest_type') != nil
           vmconfig.vm.guest = get_settings(platforms,settings,i,'guest_type')
