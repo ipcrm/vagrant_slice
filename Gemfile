@@ -11,7 +11,7 @@ gem 'vagrant', :github => 'mitchellh/vagrant', :tag => 'v1.8.1'
 # under Bundler.
 group :plugins do
   gem 'vagrant-hosts', '>= 2.8.0'
-  gem 'vagrant-openstack-provider', :github => 'ipcrm/vagrant-openstack-provider', :ref => 'master'
+  gem 'vagrant-openstack-provider', :github => 'ipcrm/vagrant-openstack-provider', :ref => 'merged'
   gem 'vagrant-norequiretty'
   gem 'vagrant-triggers'
 end
