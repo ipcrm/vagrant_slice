@@ -79,7 +79,7 @@ Vagrant.configure(2) do |config|
           provider.security_groups        = get_settings(platforms,settings,i,'security_groups')
           provider.sync_method            = get_settings(platforms,settings,i,'sync_method')
           provider.ssh_disabled           = get_settings(platforms,settings,i,'ssh_disabled')
-          provider.user_data              = user_data[ get_settings(platforms,settings,i,'user_data') ].gsub("MASTERSERVER",master_ip)
+          provider.user_data              = user_data[ get_settings(platforms,settings,i,'user_data') ]
         end
 
         vmconfig.vm.provision :hosts do |provisioner|
@@ -98,7 +98,7 @@ Vagrant.configure(2) do |config|
           vmroles.each {|r|
             if roles.key?(r)
               vmconfig.vm.provision "shell",
-                inline: roles[r].gsub("MASTERSERVER",master_ip)
+                inline: roles[r]
             else
               abort("Error: VM #{i} configured role #{r} is not valid! Existing...")
             end
