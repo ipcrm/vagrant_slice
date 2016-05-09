@@ -12,7 +12,7 @@
 
 ## Overview
 
-The `vagrant_slice` repo lets you leverage the vagrant-openstack-provider with an OpenStack deploment.  In addition it's also configured (via the vagrantfile) to leverage vagrant-hosts for automated hosts file management (accross platforms).  This enviornment was originally designed to be used for creating puppet enviornments so you will see some reference to that (ie master-ip variable).
+The `vagrant_slice` repo lets you leverage the vagrant-openstack-provider with an OpenStack deployment.  In addition it's also configured (via the vagrantfile) to leverage vagrant-hosts for automated hosts file management (accross platforms).  This enviornment was originally designed to be used for creating puppet enviornments so you will see some reference to that.
 
 ## Setup
 Start by cloning this repo to your machine.
